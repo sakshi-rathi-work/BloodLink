@@ -103,7 +103,8 @@ def list_donors(
     query = db.query(Donor)
 
     if blood_group:
-        query = query.filter(Donor.blood_group == blood_group)
+        normalized_group = blood_group.replace(" ", "+").strip()
+        query = query.filter(Donor.blood_group == normalized_group)
     if location:
         query = query.filter(Donor.address.ilike(f"%{location}%"))
     if last_donation_before:

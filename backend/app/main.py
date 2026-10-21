@@ -1,3 +1,4 @@
+import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -5,14 +6,38 @@ from fastapi.responses import JSONResponse
 from app.api.router import api_router
 from app.core.config import settings
 from app.core.errors import AppException, app_exception_handler
+from app.db.session import SessionLocal
+from app.jobs.scheduler import start_scheduler, stop_scheduler
+from app.services.inventory import expire_overdue_units
+
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan context manager for startup and shutdown routines."""
-    # Startup tasks
+    # Run startup expiry sweep
+    try:
+        with SessionLocal() as db:
+            count = expire_overdue_units(db)
+            if count > 0:
+                logger.info("Startup expiry sweep marked %d units as expired.", count)
+    except Exception as exc:
+        logger.warning("Startup expiry sweep skipped or failed: %s", exc)
+
+    # Start background scheduler
+    try:
+        start_scheduler()
+    except Exception as exc:
+        logger.warning("Could not start background scheduler: %s", exc)
+
     yield
-    # Shutdown tasks
+
+    # Shutdown background scheduler
+    try:
+        stop_scheduler()
+    except Exception as exc:
+        logger.warning("Error stopping background scheduler: %s", exc)
 
 
 app = FastAPI(

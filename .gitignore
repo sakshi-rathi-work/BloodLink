@@ -35,6 +35,8 @@ htmlcov/
 .tox/
 .nox/
 .hypothesis/
+*.db
+*.sqlite3
 
 # ML Artifacts (PROJECT.md rule: backend/ml/artifacts/ is gitignored)
 backend/ml/artifacts/*

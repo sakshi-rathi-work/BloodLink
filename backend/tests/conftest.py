@@ -20,15 +20,28 @@ from app.models.requester import Requester
 from app.models.staff import Staff
 from app.models.user import User
 
+import socket
+
+def _is_postgres_available() -> bool:
+    try:
+        with socket.create_connection(("127.0.0.1", 5432), timeout=0.2):
+            return True
+    except Exception:
+        return False
+
 TEST_DB_URL = os.getenv("TEST_DATABASE_URL", settings.TEST_DATABASE_URL)
 
-# Test connection, fallback to SQLite if PostgreSQL is unavailable
-try:
-    test_engine = create_engine(TEST_DB_URL, pool_pre_ping=True)
-    with test_engine.connect() as conn:
-        conn.execute(text("SELECT 1"))
-    is_sqlite = False
-except Exception:
+if _is_postgres_available():
+    try:
+        test_engine = create_engine(TEST_DB_URL, pool_pre_ping=True, connect_args={"connect_timeout": 1})
+        with test_engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        is_sqlite = False
+    except Exception:
+        TEST_DB_URL = "sqlite:///./bloodlink_test.db"
+        test_engine = create_engine(TEST_DB_URL, pool_pre_ping=True)
+        is_sqlite = True
+else:
     TEST_DB_URL = "sqlite:///./bloodlink_test.db"
     test_engine = create_engine(TEST_DB_URL, pool_pre_ping=True)
     is_sqlite = True
@@ -39,6 +52,17 @@ TestingSessionLocal = sessionmaker(
     bind=test_engine,
     expire_on_commit=False,
 )
+
+# Ensure all modules using SessionLocal use the test session during tests
+import app.db.session as db_session_module
+import app.jobs.scheduler as scheduler_module
+import app.main as main_module
+
+db_session_module.SessionLocal = TestingSessionLocal
+scheduler_module.SessionLocal = TestingSessionLocal
+main_module.SessionLocal = TestingSessionLocal
+scheduler_module.start_scheduler = lambda: None
+main_module.start_scheduler = lambda: None
 
 
 @pytest.fixture(scope="session", autouse=True)
