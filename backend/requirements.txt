@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+alembic
+psycopg[binary]
+pydantic
+pydantic-settings
+PyJWT
+bcrypt
+APScheduler
+pandas
+numpy
+scikit-learn
+statsmodels
+reportlab
