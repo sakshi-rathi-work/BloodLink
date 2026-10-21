@@ -129,8 +129,9 @@ def admin_user(db: Session) -> User:
 
 
 @pytest.fixture
-def admin_client(client: httpx.Client, admin_user: User) -> httpx.Client:
+def admin_client(override_get_db, admin_user: User) -> TestClient:
     """HTTP client authenticated with admin JWT."""
+    client = TestClient(app=app, base_url="http://testserver")
     token = create_access_token(user_id=admin_user.user_id, role="admin")
     client.headers["Authorization"] = f"Bearer {token}"
     return client
@@ -155,8 +156,9 @@ def staff_user(db: Session) -> User:
 
 
 @pytest.fixture
-def staff_client(client: httpx.Client, staff_user: User) -> httpx.Client:
+def staff_client(override_get_db, staff_user: User) -> TestClient:
     """HTTP client authenticated with staff JWT."""
+    client = TestClient(app=app, base_url="http://testserver")
     token = create_access_token(user_id=staff_user.user_id, role="staff")
     client.headers["Authorization"] = f"Bearer {token}"
     return client
@@ -187,8 +189,9 @@ def requester_user(db: Session) -> User:
 
 
 @pytest.fixture
-def requester_client(client: httpx.Client, requester_user: User) -> httpx.Client:
+def requester_client(override_get_db, requester_user: User) -> TestClient:
     """HTTP client authenticated with requester JWT."""
+    client = TestClient(app=app, base_url="http://testserver")
     token = create_access_token(user_id=requester_user.user_id, role="requester")
     client.headers["Authorization"] = f"Bearer {token}"
     return client
