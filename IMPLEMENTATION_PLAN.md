@@ -10,12 +10,12 @@
 
 | Metric | Current State |
 |---|---|
-| **Current Phase** | **Phase 2 — Donors, Inventory & Compatibility** |
-| **Overall Project Status** | **IN_PROGRESS (Phase 1 Complete)** |
-| **Completed Phases** | **Phase 1** (1 / 6) |
+| **Current Phase** | **Phase 3 — Requests & Issuing** |
+| **Overall Project Status** | **IN_PROGRESS (Phases 1 & 2 Complete)** |
+| **Completed Phases** | **Phase 1, Phase 2** (2 / 6) |
 | **Current Blockers** | None |
 | **Last Updated** | 2026-10-21 |
-| **Next Developer's Task** | **Sakshi** to build Phase 2: donor lifecycle & eligibility rules (`services/eligibility.py`), blood unit collection with 42-day expiry (`services/donors.py`), automated & scheduled expiry sweep (`services/inventory.py`, `jobs/scheduler.py`), compatibility engine (`services/compatibility.py`), ranked stock matching lookups (`services/matching.py`), and frontend donor/inventory screens (Tasks 2.1–2.12). |
+| **Next Developer's Task** | **Saee** to build Phase 3: blood request lifecycle and issue workflow (Tasks 3.1–3.10) using `services/matching.py` (`get_compatible_units` with `for_update=True`), `services/inventory.py` (`expire_overdue_units`), requester self-service endpoints & UI, and staff request queue & atomic issuing UI. |
 
 ---
 
@@ -26,8 +26,8 @@ Work is divided **strictly by phase**, not by layer. Each developer/agent owns b
 | Phase | Phase Name | Assigned Developer | Modules Covered | Status |
 |:---:|---|:---:|---|:---:|
 | **1** | Foundation & Setup | **Sakshi** | Module 1 (Auth, RBAC, Users, Staff, Activity Logs) | `COMPLETE` |
-| **2** | Donors, Inventory & Compatibility | **Sakshi** | Module 2 (Donors), Module 3 (Inventory), Module 5 (Compatibility Rules & Stock Lookups) | `READY_TO_START` |
-| **3** | Requests & Issuing | **Saee** | Module 4 (Requests & Issuing), Module 5 (Request-level Matches) | `NOT_STARTED` |
+| **2** | Donors, Inventory & Compatibility | **Sakshi** | Module 2 (Donors), Module 3 (Inventory), Module 5 (Compatibility Rules & Stock Lookups) | `COMPLETE` |
+| **3** | Requests & Issuing | **Saee** | Module 4 (Requests & Issuing), Module 5 (Request-level Matches) | `READY_TO_START` |
 | **4** | Shortage Prediction | **Saee** | Module 6 (Shortage Prediction Analytics, Synthetic Seeder) | `NOT_STARTED` |
 | **5** | Dashboard, Reports, Camps & Admin Screens | **Esha** | Module 7 (Dashboard & Reports), Donation Camps, Admin Views | `NOT_STARTED` |
 | **6** | Hardening, QA, Documentation & Demo | **Esha** | System-wide QA, RBAC Audit, Concurrency & Security, Demo Script | `NOT_STARTED` |
@@ -211,7 +211,7 @@ flowchart LR
 
 - **Phase Objective:** Implement donor lifecycle and eligibility rules, blood unit collection via donation (atomic inventory creation with 42-day shelf life), automated and scheduled expiry sweep, blood group compatibility rules, and ranked nearest-expiry-first stock lookups.
 - **Assigned Developer / Phase Owner:** **Sakshi**
-- **Status:** `NOT_STARTED`
+- **Status:** `COMPLETE`
 - **Dependencies:** Phase 1 complete (schema, auth, base models, UI kit, API client).
 - **Files to Create / Modify:**
   ```text
@@ -647,7 +647,7 @@ flowchart LR
 | Phase | Completed By | Date Completed | Test Summary | Key Decisions / Issues Encountered | Next Phase Instructions |
 |:---:|:---:|:---:|---|---|---|
 | **1** | Sakshi (Agent) | 2026-10-21 | 24/24 pytest tests passed (100%); frontend npm run lint passed (0 errors, 0 warnings); npm run build passed in 5.17s. | Built full-stack foundation: Docker Compose PostgreSQL service + initdb script; Alembic migration with dual PostgreSQL/SQLite dialect support creating all 10 tables, indexes, and v_transactions view; centralized clock in `core/clock.py` for deterministic testing; bcrypt direct hashing and PyJWT HS256 auth; RBAC dependencies in `deps.py`; activity logging on user registration and staff writes; self-modification guard on admin account; `scripts/create_admin.py` CLI bootstrap; Vite + React + Tailwind frontend with shared UI kit (12 components), AuthLayout, StaffLayout (sidebar), RequesterLayout (top nav), and ProtectedRoute. | Baseline is 100% green. Sakshi proceeds with Phase 2: Implement `services/eligibility.py` (age/weight/gap rules), `services/compatibility.py` (canonical COMPATIBILITY dict), `services/matching.py` (nearest-expiry-first query), `services/inventory.py` (`expire_overdue_units`), APScheduler daily expiry job, donor & inventory API routes, and frontend Donor and Inventory screens. |
-| **2** | *Pending* | — | — | — | — |
+| **2** | Sakshi (Agent) | 2026-10-21 | 47/47 pytest tests passed (100%); frontend npm run lint passed (0 errors, 0 warnings); npm run build passed in 5.82s. | Built donor, inventory, and compatibility system: Pure eligibility engine (`services/eligibility.py`) enforcing age 18–65, weight ≥ 50kg, 90-day gap with reason codes; canonical compatibility matrix (`services/compatibility.py`) covering all 8 groups; ranked stock matching query (`services/matching.py`) ordering by `expiry_date ASC, unit_id ASC` with `for_update` support; atomic donation collection (`services/donors.py`) creating available unit with 42-day expiry and updating donor's last donation date; inventory service (`services/inventory.py`) with `expire_overdue_units` and zero-filled 8-group stock counts; background scheduler (`jobs/scheduler.py` via APScheduler) and startup sweep in lifespan; full donor and inventory CRUD APIs with deletion guards (`REFERENCED_RECORD`, `UNIT_ALREADY_ISSUED`, `DONOR_HAS_UNITS`); frontend views: `DonorListPage`, `DonorFormPage`, `DonorDetailPage` (live eligibility card + collection flow + donation history), and `InventoryPage` (stock cards highlighting < 10 units, tabs for all units and expiring-soon, manual expiry sweep, admin delete). | **Handoff to Saee (Phase 3):** All donor & inventory services and schemas are active. Saee should implement `services/issuing.py` using `get_compatible_units(db, requested_group, limit, for_update=True)` from `app.services.matching` and `expire_overdue_units(db)` from `app.services.inventory`. Saee will create `schemas/requester.py`, `schemas/request.py`, `api/requesters.py`, and `api/requests.py` (atomic request fulfillment with `SELECT ... FOR UPDATE` and 409 `INSUFFICIENT_STOCK` rollback), and frontend Requester Portal and Staff Request Queue pages. |
 | **3** | *Pending* | — | — | — | — |
 | **4** | *Pending* | — | — | — | — |
 | **5** | *Pending* | — | — | — | — |
