@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres:16
+    container_name: bloodlink_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: bloodlink
+      POSTGRES_PASSWORD: bloodlink
+      POSTGRES_DB: bloodlink
+    ports:
+      - "5432:5432"
+    volumes:
+      - bloodlink_pgdata:/var/lib/postgresql/data
+      - ./docker/initdb:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bloodlink -d bloodlink"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  bloodlink_pgdata:
