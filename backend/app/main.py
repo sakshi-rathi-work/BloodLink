@@ -82,5 +82,15 @@ async def http_exception_handler(request: Request, exc: HTTPException):
     )
 
 
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception):
+    """Ensure any unhandled server errors return standard JSON envelope with CORS headers."""
+    logger.exception("Unhandled server exception: %s", exc)
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={"detail": {"code": "INTERNAL_SERVER_ERROR", "message": "An unexpected server error occurred."}},
+    )
+
+
 # Mount API routers under /api
 app.include_router(api_router)

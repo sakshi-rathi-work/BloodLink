@@ -10,12 +10,12 @@
 
 | Metric | Current State |
 |---|---|
-| **Current Phase** | **Phase 3 — Requests & Issuing** |
-| **Overall Project Status** | **IN_PROGRESS (Phases 1 & 2 Complete)** |
-| **Completed Phases** | **Phase 1, Phase 2** (2 / 6) |
+| **Current Phase** | **Phase 5 — Dashboard, Reports, Camps & Admin Screens** |
+| **Overall Project Status** | **IN_PROGRESS (Phases 1, 2, 3 & 4 Complete, Phase 5 Ready to Start)** |
+| **Completed Phases** | **Phase 1, Phase 2, Phase 3, Phase 4** (4 / 6) |
 | **Current Blockers** | None |
-| **Last Updated** | 2026-10-21 |
-| **Next Developer's Task** | **Saee** to build Phase 3: blood request lifecycle and issue workflow (Tasks 3.1–3.10) using `services/matching.py` (`get_compatible_units` with `for_update=True`), `services/inventory.py` (`expire_overdue_units`), requester self-service endpoints & UI, and staff request queue & atomic issuing UI. |
+| **Last Updated** | 2026-10-23 |
+| **Next Developer's Task** | **Esha** ready to begin Phase 5: executive dashboard (summary stats, 30-day donation/issue trends, wastage rates, shortage alert cards via `app.services.prediction_alerts`), ReportLab PDF and CSV export engine for 7 report types, donation camps management, and admin views. All Phase 3 requests & issuing and Phase 4 ML models & prediction APIs are verified green. |
 
 ---
 
@@ -27,9 +27,9 @@ Work is divided **strictly by phase**, not by layer. Each developer/agent owns b
 |:---:|---|:---:|---|:---:|
 | **1** | Foundation & Setup | **Sakshi** | Module 1 (Auth, RBAC, Users, Staff, Activity Logs) | `COMPLETE` |
 | **2** | Donors, Inventory & Compatibility | **Sakshi** | Module 2 (Donors), Module 3 (Inventory), Module 5 (Compatibility Rules & Stock Lookups) | `COMPLETE` |
-| **3** | Requests & Issuing | **Saee** | Module 4 (Requests & Issuing), Module 5 (Request-level Matches) | `READY_TO_START` |
-| **4** | Shortage Prediction | **Saee** | Module 6 (Shortage Prediction Analytics, Synthetic Seeder) | `NOT_STARTED` |
-| **5** | Dashboard, Reports, Camps & Admin Screens | **Esha** | Module 7 (Dashboard & Reports), Donation Camps, Admin Views | `NOT_STARTED` |
+| **3** | Requests & Issuing | **Saee** | Module 4 (Requests & Issuing), Module 5 (Request-level Matches) | `COMPLETE` |
+| **4** | Shortage Prediction | **Saee** | Module 6 (Shortage Prediction Analytics, Synthetic Seeder) | `COMPLETE` |
+| **5** | Dashboard, Reports, Camps & Admin Screens | **Esha** | Module 7 (Dashboard & Reports), Donation Camps, Admin Views | `READY_TO_START` |
 | **6** | Hardening, QA, Documentation & Demo | **Esha** | System-wide QA, RBAC Audit, Concurrency & Security, Demo Script | `NOT_STARTED` |
 
 ---
@@ -301,7 +301,7 @@ flowchart LR
 
 - **Phase Objective:** Deliver the end-to-end blood request and issuing workflow. Requesters can self-register, submit blood requests, and track status. Staff can view priority-sorted requests, inspect compatible units (nearest-expiry-first), approve/reject requests, and atomically issue blood units with row locking and audit traceability.
 - **Assigned Developer / Phase Owner:** **Saee**
-- **Status:** `NOT_STARTED`
+- **Status:** `COMPLETE`
 - **Dependencies:** Phase 1 (Auth, DB) and Phase 2 (Donors, Inventory, Compatibility engine, `matching.py`, `expire_overdue_units`).
 - **Files to Create / Modify:**
   ```text
@@ -399,7 +399,7 @@ flowchart LR
 
 - **Phase Objective:** Implement the predictive analytics engine. Build the calibrated synthetic data generator to simulate realistic donation/request history, develop the `backend/ml/` package (data aggregation from `v_transactions`, candidate models, hold-out evaluation, automated model selection), expose prediction and alert endpoints via FastAPI, build the predictions frontend dashboard, and document evaluation in `docs/ml_evaluation.md`.
 - **Assigned Developer / Phase Owner:** **Saee**
-- **Status:** `NOT_STARTED`
+- **Status:** `COMPLETE`
 - **Dependencies:** Phase 3 complete (`v_transactions` view populated with donations, issues, and wastage; operational business logic in place).
 - **Files to Create / Modify:**
   ```text

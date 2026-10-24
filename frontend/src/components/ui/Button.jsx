@@ -10,6 +10,9 @@ export default function Button({
   disabled = false,
   className = "",
   onClick,
+  icon: Icon,
+  title,
+  id,
   ...props
 }) {
   const baseStyles =
@@ -34,18 +37,24 @@ export default function Button({
     lg: "px-5 py-2.5 text-base gap-2.5",
   };
 
+  const iconSizes = { sm: 13, md: 15, lg: 17 };
+
   return (
     <button
+      id={id}
       type={type}
       disabled={disabled || loading}
       onClick={onClick}
+      title={title}
       className={`${baseStyles} ${variants[variant] || variants.primary} ${
         sizes[size] || sizes.md
       } ${className}`}
       {...props}
     >
       {loading && <Spinner size="sm" className="mr-1 text-current" />}
+      {!loading && Icon && <Icon size={iconSizes[size] || 15} aria-hidden="true" />}
       {children}
     </button>
   );
 }
+

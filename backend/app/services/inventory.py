@@ -7,11 +7,16 @@ from app.core.constants import BLOOD_GROUPS
 from app.models.blood_unit import BloodUnit
 
 
-def expire_overdue_units(db: Session, today_date: Optional[date] = None) -> int:
+def expire_overdue_units(
+    db: Session,
+    today_date: Optional[date] = None,
+    commit: bool = True,
+) -> int:
     """
     Find all available units where expiry_date < today and mark them as expired (wastage).
     
-    Returns the count of updated units.
+    Returns the count of updated units. If commit is False, changes are flushed without committing,
+    allowing the caller to manage transaction atomicity.
     """
     if today_date is None:
         today_date = clock.today()
@@ -29,7 +34,10 @@ def expire_overdue_units(db: Session, today_date: Optional[date] = None) -> int:
     if count > 0:
         for unit in overdue_units:
             unit.status = "expired"
-        db.commit()
+        if commit:
+            db.commit()
+        else:
+            db.flush()
 
     return count
 

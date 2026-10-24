@@ -75,5 +75,7 @@ pytest
 
 ## Documentation
 
-- [PROJECT.md](file:///c:/Users/Sakshi/BloodLink/PROJECT.md): Definitive architecture and system specifications.
-- [IMPLEMENTATION_PLAN.md](file:///c:/Users/Sakshi/BloodLink/IMPLEMENTATION_PLAN.md): Living handoff plan and implementation tracking.
+- [PROJECT.md](PROJECT.md): Definitive architecture and system specifications.
+- [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md): Living handoff plan and implementation tracking.
+- [HANDOFF.md](HANDOFF.md): Living handoff log and phase progress tracking.
+

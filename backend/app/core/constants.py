@@ -10,6 +10,8 @@ GENDERS = ("male", "female", "other")
 
 URGENCIES = ("emergency", "routine")
 
+REQUEST_URGENCIES = URGENCIES  # alias used in api/requests.py
+
 REQUEST_STATUSES = ("pending", "approved", "issued", "rejected")
 
 UNIT_STATUSES = ("available", "issued", "expired")

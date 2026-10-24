@@ -4,14 +4,18 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function Pagination({
   page = 1,
+  currentPage,
   pageSize = 20,
   total = 0,
+  totalItems,
   onPageChange,
   className = "",
 }) {
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
-  const startItem = total === 0 ? 0 : (page - 1) * pageSize + 1;
-  const endItem = Math.min(page * pageSize, total);
+  const activePage = currentPage ?? page;
+  const totalCount = totalItems ?? total;
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const startItem = totalCount === 0 ? 0 : (activePage - 1) * pageSize + 1;
+  const endItem = Math.min(activePage * pageSize, totalCount);
 
   return (
     <div className={`flex flex-col sm:flex-row items-center justify-between gap-4 py-3 px-2 ${className}`}>

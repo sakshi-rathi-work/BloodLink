@@ -65,9 +65,25 @@ scheduler_module.start_scheduler = lambda: None
 main_module.start_scheduler = lambda: None
 
 
+def pytest_runtest_setup(item):
+    """Enforce postgres marker requirement."""
+    if "postgres" in item.keywords:
+        if is_sqlite:
+            if os.getenv("REQUIRE_POSTGRES_TESTS") == "1":
+                pytest.fail("Test failed: requires PostgreSQL dialect (REQUIRE_POSTGRES_TESTS=1)")
+            else:
+                pytest.skip("UNVERIFIED: requires PostgreSQL dialect")
+
+
+
 @pytest.fixture(scope="session", autouse=True)
 def setup_test_database():
     """Create all tables in test database once per session."""
+    if not is_sqlite:
+        with test_engine.connect() as conn:
+            conn.execute(text("DROP VIEW IF EXISTS v_transactions CASCADE;"))
+            conn.commit()
+
     Base.metadata.drop_all(bind=test_engine)
     Base.metadata.create_all(bind=test_engine)
 
@@ -95,6 +111,11 @@ def setup_test_database():
             conn.commit()
 
     yield
+
+    if not is_sqlite:
+        with test_engine.connect() as conn:
+            conn.execute(text("DROP VIEW IF EXISTS v_transactions CASCADE;"))
+            conn.commit()
 
     Base.metadata.drop_all(bind=test_engine)
 
