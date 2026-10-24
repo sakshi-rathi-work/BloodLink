@@ -1,5 +1,19 @@
 from fastapi import APIRouter
-from app.api import activity_logs, auth, donors, health, inventory, matching, predictions, requesters, requests, staff
+from app.api import (
+    activity_logs,
+    auth,
+    camps,
+    dashboard,
+    donors,
+    health,
+    inventory,
+    matching,
+    predictions,
+    reports,
+    requesters,
+    requests,
+    staff,
+)
 
 api_router = APIRouter(prefix="/api")
 
@@ -13,5 +27,8 @@ api_router.include_router(matching.router)
 api_router.include_router(requesters.router)
 api_router.include_router(requests.router)
 api_router.include_router(predictions.router)
+api_router.include_router(camps.router)
+api_router.include_router(dashboard.router)
+api_router.include_router(reports.router)
 
 
