@@ -37,7 +37,19 @@ def _get_api_routes():
             for method in route.methods:
                 if method not in ("HEAD", "OPTIONS"):
                     api_routes.append((method, route.path))
-    return sorted(api_routes, key=lambda x: (x[1], x[0]))
+
+    if not api_routes:
+        from app.api.router import api_router
+        for ir in api_router.routes:
+            router = getattr(ir, "original_router", None) or ir
+            for r in getattr(router, "routes", []):
+                if isinstance(r, APIRoute):
+                    full_path = f"/api{r.path}"
+                    for m in r.methods:
+                        if m not in ("HEAD", "OPTIONS"):
+                            api_routes.append((m, full_path))
+
+    return sorted(list(set(api_routes)), key=lambda x: (x[1], x[0]))
 
 
 PUBLIC_ROUTES = {
@@ -70,7 +82,6 @@ STAFF_AND_ADMIN_ROUTES = {
     ("GET", "/api/inventory/units/{unit_id}"),
     ("GET", "/api/inventory/expiring"),
     ("POST", "/api/inventory/expire-overdue"),
-    ("GET", "/api/matching/compatibility"),
     ("GET", "/api/matching/units"),
     ("GET", "/api/requests/{request_id}/matches"),
     ("POST", "/api/requests/{request_id}/approve"),
@@ -106,7 +117,12 @@ class TestRBACExhaustiveAudit:
             is_admin = any(path.startswith(prefix) for prefix in ADMIN_ONLY_PREFIXES) or method == "DELETE"
             is_requester = (method, path) in REQUESTER_ONLY_ROUTES
             is_staff_admin = (method, path) in STAFF_AND_ADMIN_ROUTES
-            is_common = (method, path) in {("GET", "/api/auth/me"), ("GET", "/api/requests"), ("GET", "/api/requests/{request_id}")}
+            is_common = (method, path) in {
+                ("GET", "/api/auth/me"),
+                ("GET", "/api/matching/compatibility"),
+                ("GET", "/api/requests"),
+                ("GET", "/api/requests/{request_id}"),
+            }
 
             accounted_for = is_public or is_admin or is_requester or is_staff_admin or is_common
             assert accounted_for, f"Route {method} {path} is not accounted for in RBAC security audit matrix!"
