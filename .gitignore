@@ -59,3 +59,11 @@ yarn-error.log*
 *~
 .DS_Store
 Thumbs.db
+
+# Documentation & Planning
+demo_script.md
+docs/demo_script.md
+qa_checklist.md
+docs/qa_checklist.md
+IMPLEMENTATION_PLAN.md
+HANDOFF.md
