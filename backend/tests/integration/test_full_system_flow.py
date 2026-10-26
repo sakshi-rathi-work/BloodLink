@@ -56,7 +56,7 @@ def test_master_full_system_integration_flow(admin_client, staff_client, client,
         res_elig = staff_client.get(f"/api/donors/{donor_id}/eligibility")
         assert res_elig.status_code == 200
         assert res_elig.json()["eligible"] is True
-        assert res_elig.json()["failure_reasons"] == []
+        assert res_elig.json()["reasons"] == []
 
         # =========================================================================
         # 2. RECORD DONATION & INVENTORY STOCK (Modules 2 & 3)
@@ -70,7 +70,7 @@ def test_master_full_system_integration_flow(admin_client, staff_client, client,
         # Check stock in inventory
         res_stock = staff_client.get("/api/inventory/stock")
         assert res_stock.status_code == 200
-        stock_map = {item["blood_group"]: item["available_units"] for item in res_stock.json()}
+        stock_map = {item["blood_group"]: item["available_units"] for item in res_stock.json()["stock"]}
         assert stock_map.get("B+") == 1
 
         # Check unit details
@@ -163,8 +163,8 @@ def test_master_full_system_integration_flow(admin_client, staff_client, client,
         res_issue = staff_client.post(f"/api/requests/{request_id}/issue")
         assert res_issue.status_code == 200
         assert res_issue.json()["status"] == "issued"
-        assert res_issue.json()["units_issued"] == 1
-        assert res_issue.json()["issued_unit_ids"] == [unit_id]
+        assert res_issue.json()["issued_count"] == 1
+        assert [u["unit_id"] for u in res_issue.json().get("issued_units", [])] == [unit_id]
 
         # Verify unit status updated to 'issued'
         unit_after = db.query(BloodUnit).filter(BloodUnit.unit_id == unit_id).first()
@@ -178,7 +178,7 @@ def test_master_full_system_integration_flow(admin_client, staff_client, client,
         # Verify inventory stock is now 0 for B+
         res_stock_after = staff_client.get("/api/inventory/stock")
         assert res_stock_after.status_code == 200
-        stock_map_after = {item["blood_group"]: item["available_units"] for item in res_stock_after.json()}
+        stock_map_after = {item["blood_group"]: item["available_units"] for item in res_stock_after.json()["stock"]}
         assert stock_map_after.get("B+") == 0
 
         # =========================================================================
