@@ -131,7 +131,7 @@ def test_delete_camp_admin_success(admin_client: httpx.Client):
     assert get_res.status_code == 404
 
 
-def test_camp_activity_log(admin_client: httpx.Client, db_session: Session):
+def test_camp_activity_log(admin_client: httpx.Client, db: Session):
     create_res = admin_client.post(
         "/api/camps",
         json={"location": "Logged Camp Drive", "camp_date": "2026-11-12", "target_units": 80},
@@ -139,7 +139,7 @@ def test_camp_activity_log(admin_client: httpx.Client, db_session: Session):
     camp_id = create_res.json()["camp_id"]
 
     log = (
-        db_session.query(ActivityLog)
+        db.query(ActivityLog)
         .filter(ActivityLog.entity_type == "donation_camp", ActivityLog.entity_id == camp_id)
         .first()
     )
