@@ -1461,19 +1461,19 @@ Six phases, no fixed dates. A phase is **done** only when every exit criterion i
 
 ## 17. Final Acceptance Checklist
 
-- [ ] Donor registration with demographics and blood group; search/filter by blood group, location, last-donation date; regular donors flagged
-- [ ] Eligibility enforced (age, weight, 90-day gap) when recording a donation
-- [ ] Each donation creates a unit with a 42-day expiry; stock levels by group are accurate
-- [ ] Expiring units are surfaced in-app; overdue units are auto-marked expired (wastage)
-- [ ] Requesters can self-register, log in, submit requests, and see only their own
-- [ ] Requests progress `pending → approved → issued` or `rejected`; emergency requests are prioritized
-- [ ] Matching lists all compatible units ranked nearest-expiry-first; issuing is atomic and traceable (unit ↔ donor ↔ request ↔ staff)
-- [ ] Prediction run produces 7–30 day forecasts per group, stores them, selects the best of three models via held-out evaluation, and raises safe-minimum alerts
-- [ ] Dashboard shows stock (low highlighted), donations vs. issues, wastage, predicted alerts
-- [ ] PDF and CSV reports download correctly for all report types
-- [ ] Roles enforced exactly per Section 6.1; only admin can delete; activity log records every write
-- [ ] Passwords are bcrypt-hashed and never returned
-- [ ] Fresh-clone setup works from the README; all tests pass
+- [x] Donor registration with demographics and blood group; search/filter by blood group, location, last-donation date; regular donors flagged
+- [x] Eligibility enforced (age, weight, 90-day gap) when recording a donation
+- [x] Each donation creates a unit with a 42-day expiry; stock levels by group are accurate
+- [x] Expiring units are surfaced in-app; overdue units are auto-marked expired (wastage)
+- [x] Requesters can self-register, log in, submit requests, and see only their own
+- [x] Requests progress `pending → approved → issued` or `rejected`; emergency requests are prioritized
+- [x] Matching lists all compatible units ranked nearest-expiry-first; issuing is atomic and traceable (unit ↔ donor ↔ request ↔ staff)
+- [x] Prediction run produces 7–30 day forecasts per group, stores them, selects the best of three models via held-out evaluation, and raises safe-minimum alerts
+- [x] Dashboard shows stock (low highlighted), donations vs. issues, wastage, predicted alerts
+- [x] PDF and CSV reports download correctly for all report types
+- [x] Roles enforced exactly per Section 6.1; only admin can delete; activity log records every write
+- [x] Passwords are bcrypt-hashed and never returned
+- [x] Fresh-clone setup works from the README; all tests pass
 
 ---
 
