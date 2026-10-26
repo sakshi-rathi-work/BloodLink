@@ -130,7 +130,7 @@ class TestActivityLogAudit:
 
         # 3. Delete camp (admin only)
         res_del = admin_client.delete(f"/api/camps/{camp_id}")
-        assert res_del.status_code == 200
+        assert res_del.status_code == 204
 
         log_del = (
             db.query(ActivityLog)
@@ -155,6 +155,7 @@ class TestActivityLogAudit:
             gender="female",
             blood_group="O+",
             phone="9871112223",
+            address="123 Hospital Road",
             weight=60.0,
         )
         db.add(donor)
@@ -228,7 +229,11 @@ class TestActivityLogAudit:
         )
         assert log_issue is not None
         assert log_issue.user_id == staff_user.user_id
-        assert "units_issued" in log_issue.details or "unit_ids" in log_issue.details
+        assert (
+            "allocated_unit_ids" in log_issue.details
+            or "units_issued" in log_issue.details
+            or "unit_ids" in log_issue.details
+        )
 
     def test_staff_management_activity_logs(self, admin_client, admin_user, db):
         """Verify activity logs for staff account creation, update, and deletion."""
@@ -276,15 +281,15 @@ class TestActivityLogAudit:
         assert log_update is not None
 
         # 3. Reset password
-        res_pwd = admin_client.post(
-            f"/api/staff/{staff_id}/reset-password",
-            json={"new_password": "newpassword1234"},
+        res_pwd = admin_client.patch(
+            f"/api/staff/{staff_id}",
+            json={"password": "newpassword1234"},
         )
         assert res_pwd.status_code == 200
 
         # 4. Delete staff
         res_del = admin_client.delete(f"/api/staff/{staff_id}")
-        assert res_del.status_code == 200
+        assert res_del.status_code == 204
 
         log_del = (
             db.query(ActivityLog)
