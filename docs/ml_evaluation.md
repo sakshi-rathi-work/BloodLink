@@ -77,5 +77,6 @@ Safe minimum inventory thresholds are defined per blood group (`SAFE_MINIMUM_BY_
 - O-: 8 units
 
 ### Alert Logic:
-An alert is generated if $\text{PredictedStock}(t) < \text{SafeMinimum}$ on any day $t \le \text{today} + \text{within\_days}$.
-Alerts are prioritized by `days_until_shortage` ascending, giving staff direct visibility into upcoming deficits and immediate time to organize targeted donation drives or contact regular donors.
+$$\text{PredictedStock}(t) < \text{SafeMinimum} \quad \text{for any day } t \le \text{today} + \text{horizon}$$
+
+An alert is generated whenever projected stock drops below the safe minimum threshold within the requested `within_days` forecast horizon. Alerts are prioritized by `days_until_shortage` ascending, giving staff direct visibility into upcoming deficits and immediate time to organize targeted donation drives or contact regular donors.
